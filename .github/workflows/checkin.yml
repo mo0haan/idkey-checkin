@@ -1,17 +1,19 @@
-name: Daily Idkey Check-in (5 Accounts - 9 AM)
+name: Daily Idkey Check-in (7 Accounts)
 
 on:
   schedule:
-    - cron: '15 3 * * *'     # Runs every day at 9:00 AM Nepal time
+    - cron: '15 6 * * *'     # Every day at 12:00 PM Nepal time
   workflow_dispatch:
 
 jobs:
   checkin:
     runs-on: ubuntu-latest
     steps:
-      - name: Run check-in for all 5 accounts
+      - name: Run check-in for all 7 accounts
         env:
           IDKEY_TOKEN1: ${{ secrets.IDKEY_TOKEN }}
+          IDKEY_TOKEN2: ${{ secrets.IDKEY_TOKEN2 }}
+          IDKEY_TOKEN3: ${{ secrets.IDKEY_TOKEN3 }}
           IDKEY_TOKEN4: ${{ secrets.IDKEY_TOKEN4 }}
           IDKEY_TOKEN5: ${{ secrets.IDKEY_TOKEN5 }}
           IDKEY_TOKEN6: ${{ secrets.IDKEY_TOKEN6 }}
@@ -43,10 +45,12 @@ jobs:
                   return False
 
           s1 = checkin(os.getenv("IDKEY_TOKEN1"), "mo3haan")
+          s2 = checkin(os.getenv("IDKEY_TOKEN2"), "Mo4haan")
+          s3 = checkin(os.getenv("IDKEY_TOKEN3"), "Mo5haan")
           s4 = checkin(os.getenv("IDKEY_TOKEN4"), "Mo6haan")
           s5 = checkin(os.getenv("IDKEY_TOKEN5"), "Mo7haan")
           s6 = checkin(os.getenv("IDKEY_TOKEN6"), "Mo8haan")
           s7 = checkin(os.getenv("IDKEY_TOKEN7"), "Mo9haan")
 
-          print(f"\n✅ Finished! mo3haan: {"Success" if s1 else "Failed"} | Mo6haan: {"Success" if s4 else "Failed"} | Mo7haan: {"Success" if s5 else "Failed"} | Mo8haan: {"Success" if s6 else "Failed"} | Mo9haan: {"Success" if s7 else "Failed"}")
+          print(f"\n✅ Finished! mo3haan: {"Success" if s1 else "Failed"} | Mo4haan: {"Success" if s2 else "Failed"} | Mo5haan: {"Success" if s3 else "Failed"} | Mo6haan: {"Success" if s4 else "Failed"} | Mo7haan: {"Success" if s5 else "Failed"} | Mo8haan: {"Success" if s6 else "Failed"} | Mo9haan: {"Success" if s7 else "Failed"}")
           '
