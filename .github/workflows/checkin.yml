@@ -1,33 +1,56 @@
-name: Daily Idkey Check-in
+name: Daily Idkey Check-in (7 Accounts)
 
 on:
   schedule:
-    - cron: '15 6 * * *'     # Runs every day at 12:00 PM Nepal time
-  workflow_dispatch:         # You can also run it manually
+    - cron: '15 6 * * *'     # Every day at 12:00 PM Nepal time
+  workflow_dispatch:
 
 jobs:
   checkin:
     runs-on: ubuntu-latest
     steps:
-      - name: Run daily check-in
+      - name: Run check-in for all 7 accounts
         env:
-          IDKEY_TOKEN: ${{ secrets.IDKEY_TOKEN }}
+          IDKEY_TOKEN1: ${{ secrets.IDKEY_TOKEN }}
+          IDKEY_TOKEN2: ${{ secrets.IDKEY_TOKEN2 }}
+          IDKEY_TOKEN3: ${{ secrets.IDKEY_TOKEN3 }}
+          IDKEY_TOKEN4: ${{ secrets.IDKEY_TOKEN4 }}
+          IDKEY_TOKEN5: ${{ secrets.IDKEY_TOKEN5 }}
+          IDKEY_TOKEN6: ${{ secrets.IDKEY_TOKEN6 }}
+          IDKEY_TOKEN7: ${{ secrets.IDKEY_TOKEN7 }}
         run: |
           python -c '
           import requests, json, os
           from datetime import datetime
-          TOKEN = os.getenv("IDKEY_TOKEN")
-          url = "https://one.idkey.cc/api/user/checkin"
-          headers = {
-              "authorization": f"Bearer {TOKEN}",
-              "accept": "*/*",
-              "accept-language": "en-US,en;q=0.9",
-              "user-agent": "Mozilla/5.0"
-          }
-          r = requests.post(url, headers=headers, timeout=15)
-          print(f"[{datetime.now()}] Status: {r.status_code}")
-          try:
-              print(json.dumps(r.json(), indent=2, ensure_ascii=False))
-          except:
-              print(r.text)
+
+          def checkin(token, account_name):
+              print(f"[{datetime.now().strftime("%Y-%m-%d %H:%M:%S")}] 🔄 Checking → {account_name}")
+              headers = {
+                  "authorization": f"Bearer {token}",
+                  "accept": "*/*",
+                  "accept-language": "en-US,en;q=0.9",
+                  "user-agent": "Mozilla/5.0"
+              }
+              try:
+                  r = requests.post("https://one.idkey.cc/api/user/checkin", headers=headers, timeout=15)
+                  print(f"   Status: {r.status_code}")
+                  try:
+                      data = r.json()
+                      print(f"   Result: {json.dumps(data, ensure_ascii=False)}")
+                  except:
+                      print(f"   Raw: {r.text[:300]}")
+                  return r.status_code == 200
+              except Exception as e:
+                  print(f"   ❌ Error: {e}")
+                  return False
+
+          s1 = checkin(os.getenv("IDKEY_TOKEN1"), "mo3haan")
+          s2 = checkin(os.getenv("IDKEY_TOKEN2"), "Mo4haan")
+          s3 = checkin(os.getenv("IDKEY_TOKEN3"), "Mo5haan")
+          s4 = checkin(os.getenv("IDKEY_TOKEN4"), "Mo6haan")
+          s5 = checkin(os.getenv("IDKEY_TOKEN5"), "Mo7haan")
+          s6 = checkin(os.getenv("IDKEY_TOKEN6"), "Mo8haan")
+          s7 = checkin(os.getenv("IDKEY_TOKEN7"), "Mo9haan")
+
+          print(f"\n✅ Finished! mo3haan: {"Success" if s1 else "Failed"} | Mo4haan: {"Success" if s2 else "Failed"} | Mo5haan: {"Success" if s3 else "Failed"} | Mo6haan: {"Success" if s4 else "Failed"} | Mo7haan: {"Success" if s5 else "Failed"} | Mo8haan: {"Success" if s6 else "Failed"} | Mo9haan: {"Success" if s7 else "Failed"}")
           '
