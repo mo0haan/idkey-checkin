@@ -1,0 +1,33 @@
+name: Daily Idkey Check-in
+
+on:
+  schedule:
+    - cron: '15 6 * * *'     # Runs every day at 12:00 PM Nepal time
+  workflow_dispatch:         # You can also run it manually
+
+jobs:
+  checkin:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run daily check-in
+        env:
+          IDKEY_TOKEN: ${{ secrets.IDKEY_TOKEN }}
+        run: |
+          python -c '
+          import requests, json, os
+          from datetime import datetime
+          TOKEN = os.getenv("IDKEY_TOKEN")
+          url = "https://one.idkey.cc/api/user/checkin"
+          headers = {
+              "authorization": f"Bearer {TOKEN}",
+              "accept": "*/*",
+              "accept-language": "en-US,en;q=0.9",
+              "user-agent": "Mozilla/5.0"
+          }
+          r = requests.post(url, headers=headers, timeout=15)
+          print(f"[{datetime.now()}] Status: {r.status_code}")
+          try:
+              print(json.dumps(r.json(), indent=2, ensure_ascii=False))
+          except:
+              print(r.text)
+          '
